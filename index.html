@@ -493,32 +493,34 @@ const OrderCard = ({ items, orderNumber }) => {
 
   return (
     <div className="print-area bg-white p-6 rounded-lg shadow-lg max-w-sm mx-auto border-2 border-gray-200">
-      {/* Header */}
-      <div className="text-center mb-4 border-b-2 border-dashed border-gray-300 pb-4">
-        <h1 className="text-xl font-bold text-gray-800 mb-1">ໃບເສັດ / RECEIPT</h1>
-        <div className="text-sm text-gray-600">
-          <p>ວັນທີ: {currentDate}</p>
-          <p>ເວລາ: {currentTime}</p>
-        </div>
-      </div>
+     {/* Header + QR Code Section */}
+<div className="print-area">
+  {/* Header */}
+  <div className="text-center mb-4 border-b-2 border-dashed border-gray-300 pb-4">
+    <h1 className="text-xl font-bold text-gray-800 mb-1">ໃບເສັດ / RECEIPT</h1>
+    <div className="text-sm text-gray-600">
+      <p>ວັນທີ: {currentDate}</p>
+      <p>ເວລາ: {currentTime}</p>
+    </div>
+  </div>
 
-      {/* QR Code Section */}
-{/* QR Code Section */}
-<div className="text-center mb-4">
-  <div className="inline-block p-2 bg-white rounded-lg border-2 border-dashed border-gray-400">
-    <img 
-      src={FIXED_QR_CODE} 
-      alt="QR Code" 
-      className="mx-auto mb-3"
-      style={{ 
-        width: '250px', 
-        height: '250px', 
-        objectFit: 'contain' // ทำให้ QR Code อยู่เต็มโดยไม่ล้น
-      }}
-    />
-    <p className="text-sm text-gray-600">
-      ຫລັງຈາກໂອນແລ້ວໃຫ້ແຈ້ງບິນການໂອນ
-    </p>
+  {/* QR Code Section */}
+  <div className="text-center mb-4">
+    <div className="inline-block p-2 bg-white rounded-lg border-2 border-dashed border-gray-400">
+      <img 
+        src={FIXED_QR_CODE} 
+        alt="QR Code" 
+        className="mx-auto mb-3"
+        style={{ 
+          width: '250px', 
+          height: '250px', 
+          objectFit: 'contain' // ทำให้ QR Code อยู่เต็มโดยไม่ล้น
+        }}
+      />
+      <p className="text-sm text-gray-600">
+        ຫລັງຈາກໂອນແລ້ວໃຫ້ແຈ້ງບິນການໂອນ
+      </p>
+    </div>
   </div>
 </div>
 {/* Order Number */}
