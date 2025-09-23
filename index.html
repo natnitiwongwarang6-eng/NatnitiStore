@@ -640,8 +640,8 @@ const App = () => {
           if (navigator.canShare({ files: [file] })) {
             try {
               await navigator.share({
-                title: `ໃບເສັບ #${orderNumber}`,
-                text: 'ໃບເສັບຈາກເຄື່ອງມືສ້າງໃບເສັບ',
+                title: ``,
+                text: '',
                 files: [file]
               });
               setModalMessage('ແຊຣ์ຮູບສຳເລັດແລ້ວ!');
