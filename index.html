@@ -626,8 +626,10 @@ const App = () => {
     const element = document.querySelector('.print-area');
     if (element) {
       const canvas = await html2canvas(element, {
-        backgroundColor: '#ffffff',
-        scale: 2
+    backgroundColor: '#ffffff',
+    scale: 2,
+    useCORS: true // เพิ่มตรงนี้
+
       });
       
       // Convert canvas to blob
