@@ -32,10 +32,8 @@ body {
 <script type="text/babel">
 const { useState, useEffect } = React;
 
-// Fixed QR Code URL - แก้ไขตรงนี้เพื่อใส่ QR Code ของคุณ
-const QR_CODE_FILENAME = 'quality_restoration_25680916165413506.jpeg';
-const FIXED_QR_CODE = `./${QR_CODE_FILENAME}`;
-
+// เปลี่ยนไปใช้ Base64 String แทน URL
+const FIXED_QR_CODE_BASE64 = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhkdHyUkcwxzKSgvMy8iHx++'; // วาง Base64 String ของรูปภาพ QR Code ที่นี่
 
 // --- Encode/Decode Unicode Base64 URL-safe ---
 const encodeData = (data) => {
@@ -462,14 +460,14 @@ const OrderForm = ({ items, setItems, orderNumber, generateNewOrderNumber }) => 
               </div>
               <h3 className="text-lg font-semibold mb-2 text-gray-800">ຢືນຢັນການລຶບ</h3>
               <p className="text-gray-600 mb-6">
-                ຕ້ອງການລຶບສິນຄ້າ "<span className="font-semibold">{productToDelete?.name}</span>" ແທ້ບໍ?
+                ต้องการลบสินค้า "<span className="font-semibold">{productToDelete?.name}</span>" แທ้ບໍ?
               </p>
               <div className="flex space-x-3 justify-center">
                 <button
                   onClick={confirmDelete}
                   className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg transition-colors"
                 >
-                  ລຶບ
+                  ลบ
                 </button>
                 <button
                   onClick={cancelDelete}
@@ -519,7 +517,7 @@ const OrderCard = ({ items, orderNumber }) => {
 <div className="text-center mb-4">
   <div className="inline-block p-2 bg-white rounded-lg border-2 border-dashed border-gray-400">
     <img
-      src={FIXED_QR_CODE}
+      src={FIXED_QR_CODE_BASE64} // ใช้ Base64 String ที่นี่
       crossOrigin="anonymous"
       alt="QR Code"
       className="mx-auto mb-3"
@@ -641,7 +639,7 @@ const App = () => {
     const canvas = await html2canvas(element, {
       backgroundColor: '#ffffff',
       scale: 2,
-      useCORS: true,
+      useCORS: false, // เปลี่ยนเป็น false เพราะใช้ Base64 ไม่ต้องใช้ CORS
       imageTimeout: 0
     });
     
@@ -657,7 +655,7 @@ const App = () => {
               text: 'ໃບເສັບຈາກເຄື່ອງມືສ້າງໃບເສັບ',
               files: [file]
             });
-            setModalMessage('ແຊຣ์ຮູບສຳເລັດແລ້ວ!');
+            setModalMessage('แชร์รูปภาพสำเร็จแล้ว!');
             setModalType('success');
             setShowModal(true);
           } catch (error) {
@@ -667,7 +665,7 @@ const App = () => {
               link.download = `receipt-${orderNumber}.png`;
               link.href = canvas.toDataURL();
               link.click();
-              setModalMessage('ດາວໂຫລດຮູບສຳເລັດແລ້ວ!');
+              setModalMessage('ดาวน์โหลดรูปภาพสำเร็จแล้ว!');
               setModalType('success');
               setShowModal(true);
             }
@@ -678,7 +676,7 @@ const App = () => {
           link.download = `receipt-${orderNumber}.png`;
           link.href = canvas.toDataURL();
           link.click();
-          setModalMessage('ດາວໂຫລດຮູບສຳເລັດແລ້ວ!');
+          setModalMessage('ดาวน์โหลดรูปภาพสำเร็จแล้ว!');
           setModalType('success');
           setShowModal(true);
         }
@@ -688,7 +686,7 @@ const App = () => {
         link.download = `receipt-${orderNumber}.png`;
         link.href = canvas.toDataURL();
         link.click();
-        setModalMessage('ດາວໂຫລດຮູບສຳເລັດແລ້ວ!');
+        setModalMessage('ดาวน์โหลดรูปภาพสำเร็จแล้ว!');
         setModalType('success');
         setShowModal(true);
       }
@@ -753,19 +751,19 @@ const App = () => {
                   onClick={generateShareableLink}
                   className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition-colors"
                 >
-                  📋 ຄັດລອກລິ້ງ
+                  📋 คัดลอกลิ้ง
                 </button>
                 <button
                   onClick={shareImage}
                   className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
                 >
-                  📤 ແຊຣ์ຮູບ
+                  📤 แซรภาพ
                 </button>
                 <button
                   onClick={printCard}
                   className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-lg transition-colors"
                 >
-                  🖨️ ພິມ
+                  🖨️ พิมพ์
                 </button>
               </div>
             </div>
@@ -787,7 +785,7 @@ const App = () => {
                   </span>
                 </div>
                 <h3 className="text-lg font-semibold mb-2 text-gray-800">
-                  {modalType === 'success' ? 'ສຳເລັດ!' : 'ຜິດພາດ!'}
+                  {modalType === 'success' ? 'สําเร็จ!' : 'ผิดพลาด!'}
                 </h3>
                 <p className="text-gray-600 mb-6">{modalMessage}</p>
                 <button
@@ -798,7 +796,7 @@ const App = () => {
                       : 'bg-red-500 hover:bg-red-600'
                   }`}
                 >
-                  ຕົກລົງ
+                  ตกลง
                 </button>
               </div>
             </div>
