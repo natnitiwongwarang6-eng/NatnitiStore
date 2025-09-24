@@ -623,43 +623,100 @@ const App = () => {
     setShowModal(true);
   };
 
-  const shareImage = async () => {
-    const element = document.querySelector('.print-area');
-    if (element) {
-      const canvas = await html2canvas(element, {
-    backgroundColor: '#ffffff',
-    scale: 2,
-    useCORS: true // เพิ่มตรงนี้
-
-      });
+const shareOrderCard = async () => {
+  try {
+    // สร้าง div ชั่วคราวสำหรับแชร์
+    const shareDiv = document.createElement('div');
+    shareDiv.style.cssText = `
+      position: fixed;
+      top: -9999px;
+      left: -9999px;
+      width: 400px;
+      padding: 20px;
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-family: 'Noto Sans Lao', sans-serif;
+    `;
+    
+    shareDiv.innerHTML = `
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h2 style="color: #1f2937; margin: 0 0 10px 0; font-size: 24px; font-weight: 700;">ບັດຄຳສັ່ງຊື້</h2>
+        <div style="width: 100%; height: 2px; background: linear-gradient(90deg, #3b82f6, #10b981); margin: 10px 0;"></div>
+      </div>
       
-      // Convert canvas to blob
-      canvas.toBlob(async (blob) => {
-        if (navigator.share && navigator.canShare) {
-          const file = new File([blob], `receipt-${orderNumber}.png`, { type: 'image/png' });
-          
-          if (navigator.canShare({ files: [file] })) {
-            try {
-              await navigator.share({
-                title: ``,
-                text: '',
-                files: [file]
-              });
-              setModalMessage('ແຊຣ์ຮູບສຳເລັດແລ້ວ!');
-              setModalType('success');
-              setShowModal(true);
-            } catch (error) {
-              if (error.name !== 'AbortError') {
-                // Fallback to download
-                const link = document.createElement('a');
-                link.download = `receipt-${orderNumber}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-                setModalMessage('ດາວໂຫລດຮູບສຳເລັດແລ້ວ!');
-                setModalType('success');
-                setShowModal(true);
-              }
-            }
+      <div style="margin-bottom: 15px;">
+        <strong style="color: #374151;">ຊື່ລູກຄ້າ:</strong>
+        <span style="color: #6b7280; margin-left: 10px;">${customerName}</span>
+      </div>
+      
+      <div style="margin-bottom: 15px;">
+        <strong style="color: #374151;">ເບີໂທ:</strong>
+        <span style="color: #6b7280; margin-left: 10px;">${phoneNumber}</span>
+      </div>
+      
+      <div style="margin-bottom: 15px;">
+        <strong style="color: #374151;">ທີ່ຢູ່:</strong>
+        <span style="color: #6b7280; margin-left: 10px;">${address}</span>
+      </div>
+      
+      <div style="margin-bottom: 15px;">
+        <strong style="color: #374151;">ສິນຄ້າ:</strong>
+        <span style="color: #6b7280; margin-left: 10px;">${selectedItems.join(', ')}</span>
+      </div>
+      
+      <div style="margin-bottom: 20px;">
+        <strong style="color: #374151;">ລາຄາລວມ:</strong>
+        <span style="color: #10b981; margin-left: 10px; font-size: 18px; font-weight: 600;">${totalPrice.toLocaleString()} ກີບ</span>
+      </div>
+      
+      <!-- เพิ่ม QR Code ตรงนี้ -->
+      <div style="text-align: center; margin: 20px 0;">
+        <img src="${FIXED_QR_CODE}" alt="QR Code" style="width: 120px; height: 120px; border: 2px solid #e5e7eb; border-radius: 8px;">
+        <div style="margin-top: 8px; color: #6b7280; font-size: 12px;">ສະແກນເພື່ອຈ່າຍເງິນ</div>
+      </div>
+      
+      <div style="text-align: center; margin-top: 20px; padding-top: 15px; border-top: 1px solid #e5e7eb; color: #9ca3af; font-size: 12px;">
+        ສ້າງໂດຍ: Order Card Generator
+      </div>
+    `;
+    
+    document.body.appendChild(shareDiv);
+    
+    // สร้าง canvas
+    const canvas = await html2canvas(shareDiv, {
+      backgroundColor: 'white',
+      scale: 2,
+      useCORS: true,
+      allowTaint: true
+    });
+    
+    document.body.removeChild(shareDiv);
+    
+    // แปลงเป็น blob และแชร์
+    canvas.toBlob((blob) => {
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'order-card.png', { type: 'image/png' })] })) {
+        const file = new File([blob], 'order-card.png', { type: 'image/png' });
+        navigator.share({
+          title: 'ບັດຄຳສັ່ງຊື້',
+          files: [file]
+        });
+      } else {
+        // สำรอง: ดาวน์โหลดรูป
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'order-card.png';
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    }, 'image/png');
+    
+  } catch (error) {
+    console.error('Error sharing order card:', error);
+    alert('ເກີດຂໍ້ຜິດພາດໃນການແຊຣ໌ບັດຄຳສັ່ງຊື້');
+  }
+};
           } else {
             // Fallback to download
             const link = document.createElement('a');
