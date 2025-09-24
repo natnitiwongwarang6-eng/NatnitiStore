@@ -628,6 +628,8 @@ const App = () => {
       const canvas = await html2canvas(element, {
         backgroundColor: '#ffffff',
         scale: 2
+        useCORS: true, // <-- เพิ่มตรงนี้
+        allowTaint: false
       });
       
       // Convert canvas to blob
