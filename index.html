@@ -250,7 +250,7 @@ const OrderForm = ({ items, setItems, orderNumber, generateNewOrderNumber }) => 
         {/* Product Manager */}
         {showProductManager && (
           <div className="bg-gray-50 p-4 rounded-lg mb-4">
-            <h4 className="font-semibold text-gray-700 mb-3">ຈັດການສິນຄ້າດ່ວນ</h4>
+            <h4 className="font-semibold text-gray-700 mb-3">ຈັດການສິນຄ້າ</h4>
             
             {/* Add/Edit Product Form */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
@@ -651,8 +651,8 @@ const App = () => {
         if (navigator.canShare({ files: [file] })) {
           try {
             await navigator.share({
-              title: `ໃບເສັບ #${orderNumber}`,
-              text: 'ໃບເສັບຈາກເຄື່ອງມືສ້າງໃບເສັບ',
+              title: ``,
+              text: '',
               files: [file]
             });
             setModalMessage('แชร์รูปภาพสำเร็จแล้ว!');
@@ -665,7 +665,7 @@ const App = () => {
               link.download = `receipt-${orderNumber}.png`;
               link.href = canvas.toDataURL();
               link.click();
-              setModalMessage('ดาวน์โหลดรูปภาพสำเร็จแล้ว!');
+              setModalMessage('ດາວໂຫລດສຳເລັດ!');
               setModalType('success');
               setShowModal(true);
             }
@@ -676,7 +676,7 @@ const App = () => {
           link.download = `receipt-${orderNumber}.png`;
           link.href = canvas.toDataURL();
           link.click();
-          setModalMessage('ดาวน์โหลดรูปภาพสำเร็จแล้ว!');
+          setModalMessage('ດາວໂຫລດສຳເລັດ!');
           setModalType('success');
           setShowModal(true);
         }
@@ -686,7 +686,7 @@ const App = () => {
         link.download = `receipt-${orderNumber}.png`;
         link.href = canvas.toDataURL();
         link.click();
-        setModalMessage('ดาวน์โหลดรูปภาพสำเร็จแล้ว!');
+        setModalMessage('ດາວໂຫລດສຳເລັດ!');
         setModalType('success');
         setShowModal(true);
       }
@@ -751,19 +751,19 @@ const App = () => {
                   onClick={generateShareableLink}
                   className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition-colors"
                 >
-                  📋 คัดลอกลิ้ง
+                  📋 ຄັດລັອກລິ້ງ
                 </button>
                 <button
                   onClick={shareImage}
                   className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition-colors"
                 >
-                  📤 แซรภาพ
+                  📤 ແຊພາບ
                 </button>
                 <button
                   onClick={printCard}
                   className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-lg transition-colors"
                 >
-                  🖨️ พิมพ์
+                  🖨️ ພິມ
                 </button>
               </div>
             </div>
@@ -785,7 +785,7 @@ const App = () => {
                   </span>
                 </div>
                 <h3 className="text-lg font-semibold mb-2 text-gray-800">
-                  {modalType === 'success' ? 'สําเร็จ!' : 'ผิดพลาด!'}
+                  {modalType === 'success' ? 'ສຳເລັດ!' : 'ຜິດພາດ!'}
                 </h3>
                 <p className="text-gray-600 mb-6">{modalMessage}</p>
                 <button
@@ -796,7 +796,7 @@ const App = () => {
                       : 'bg-red-500 hover:bg-red-600'
                   }`}
                 >
-                  ตกลง
+                  ຕົກລົງ
                 </button>
               </div>
             </div>
