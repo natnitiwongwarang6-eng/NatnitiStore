@@ -33,7 +33,7 @@ body {
 const { useState, useEffect } = React;
 
 // Fixed QR Code URL - แก้ไขตรงนี้เพื่อใส่ QR Code ของคุณ
-const QR_CODE_FILENAME = 'Qrcode.png';
+const QR_CODE_FILENAME = 'quality_restoration_25680916165413506.jpeg';
 const FIXED_QR_CODE = `./${QR_CODE_FILENAME}`;
 
 
@@ -628,7 +628,6 @@ const App = () => {
       const canvas = await html2canvas(element, {
         backgroundColor: '#ffffff',
         scale: 2
-        useCORS: true, // <-- เพิ่มตรงนี้
       });
       
       // Convert canvas to blob
@@ -798,5 +797,5 @@ const App = () => {
 
 ReactDOM.render(<App />, document.getElementById('root'));
 </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'983b9bdb360984e7',t:'MTc1ODY0NjkzNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
 </html>
