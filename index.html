@@ -486,6 +486,18 @@ const OrderForm = ({ items, setItems, orderNumber, generateNewOrderNumber }) => 
   );
 };
 
+// Function to wait for all images to load
+const waitForImages = async (rootEl) => {
+  const imgs = Array.from(rootEl.querySelectorAll('img'));
+  await Promise.all(
+    imgs.map(img =>
+      img.complete && img.naturalWidth !== 0
+        ? Promise.resolve()
+        : new Promise(res => { img.onload = res; img.onerror = res; })
+    )
+  );
+};
+
 // Order Card Component - Receipt Style
 const OrderCard = ({ items, orderNumber }) => {
   const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -504,18 +516,14 @@ const OrderCard = ({ items, orderNumber }) => {
       </div>
 
       {/* QR Code Section */}
-{/* QR Code Section */}
 <div className="text-center mb-4">
   <div className="inline-block p-2 bg-white rounded-lg border-2 border-dashed border-gray-400">
-    <img 
-      src={FIXED_QR_CODE} 
-      alt="QR Code" 
+    <img
+      src={FIXED_QR_CODE}
+      crossOrigin="anonymous"
+      alt="QR Code"
       className="mx-auto mb-3"
-      style={{ 
-        width: '250px', 
-        height: '250px', 
-        objectFit: 'contain' // ทำให้ QR Code อยู่เต็มโดยไม่ล้น
-      }}
+      style={{ width: '250px', height: '250px', objectFit: 'contain' }}
     />
     <p className="text-sm text-gray-600">
       ຫລັງຈາກໂອນແລ້ວໃຫ້ແຈ້ງບິນການໂອນ
@@ -624,48 +632,45 @@ const App = () => {
 
   const shareImage = async () => {
     const element = document.querySelector('.print-area');
-    if (element) {
-      const canvas = await html2canvas(element, {
-        backgroundColor: '#ffffff',
-        scale: 2
-      });
-      
-      // Convert canvas to blob
-      canvas.toBlob(async (blob) => {
-        if (navigator.share && navigator.canShare) {
-          const file = new File([blob], `receipt-${orderNumber}.png`, { type: 'image/png' });
-          
-          if (navigator.canShare({ files: [file] })) {
-            try {
-              await navigator.share({
-                title: `ໃບເສັບ #${orderNumber}`,
-                text: 'ໃບເສັບຈາກເຄື່ອງມືສ້າງໃບເສັບ',
-                files: [file]
-              });
-              setModalMessage('ແຊຣ์ຮູບສຳເລັດແລ້ວ!');
-              setModalType('success');
-              setShowModal(true);
-            } catch (error) {
-              if (error.name !== 'AbortError') {
-                // Fallback to download
-                const link = document.createElement('a');
-                link.download = `receipt-${orderNumber}.png`;
-                link.href = canvas.toDataURL();
-                link.click();
-                setModalMessage('ດາວໂຫລດຮູບສຳເລັດແລ້ວ!');
-                setModalType('success');
-                setShowModal(true);
-              }
-            }
-          } else {
-            // Fallback to download
-            const link = document.createElement('a');
-            link.download = `receipt-${orderNumber}.png`;
-            link.href = canvas.toDataURL();
-            link.click();
-            setModalMessage('ດາວໂຫລດຮູບສຳເລັດແລ້ວ!');
+    if (!element) return;
+    
+    // Step 2: Wait for images to load
+    await waitForImages(element);
+
+    // Step 3: Configure html2canvas to support CORS
+    const canvas = await html2canvas(element, {
+      backgroundColor: '#ffffff',
+      scale: 2,
+      useCORS: true,
+      imageTimeout: 0
+    });
+    
+    // Convert canvas to blob
+    canvas.toBlob(async (blob) => {
+      if (navigator.share && navigator.canShare) {
+        const file = new File([blob], `receipt-${orderNumber}.png`, { type: 'image/png' });
+        
+        if (navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              title: `ໃບເສັບ #${orderNumber}`,
+              text: 'ໃບເສັບຈາກເຄື່ອງມືສ້າງໃບເສັບ',
+              files: [file]
+            });
+            setModalMessage('ແຊຣ์ຮູບສຳເລັດແລ້ວ!');
             setModalType('success');
             setShowModal(true);
+          } catch (error) {
+            if (error.name !== 'AbortError') {
+              // Fallback to download
+              const link = document.createElement('a');
+              link.download = `receipt-${orderNumber}.png`;
+              link.href = canvas.toDataURL();
+              link.click();
+              setModalMessage('ດາວໂຫລດຮູບສຳເລັດແລ້ວ!');
+              setModalType('success');
+              setShowModal(true);
+            }
           }
         } else {
           // Fallback to download
@@ -677,8 +682,17 @@ const App = () => {
           setModalType('success');
           setShowModal(true);
         }
-      }, 'image/png');
-    }
+      } else {
+        // Fallback to download
+        const link = document.createElement('a');
+        link.download = `receipt-${orderNumber}.png`;
+        link.href = canvas.toDataURL();
+        link.click();
+        setModalMessage('ດາວໂຫລດຮູບສຳເລັດແລ້ວ!');
+        setModalType('success');
+        setShowModal(true);
+      }
+    }, 'image/png');
   };
 
   const printCard = () => {
