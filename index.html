@@ -599,34 +599,48 @@ const App = () => {
   const generateNewOrderNumber = () => {
     setOrderNumber(generateOrderNumber());
   };
-
+const [expiredModal, setExpiredModal] = React.useState(false);
   // Load data from URL on mount
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const data = urlParams.get('data');
-    if (data) {
-      const decoded = decodeData(data);
-      if (decoded) {
+  React.useEffect(() => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const data = urlParams.get('data');
+
+  if (data) {
+    const decoded = decodeData(data);
+    if (decoded) {
+      const now = Date.now();
+      const twelveHours = 12 * 60 * 60 * 1000; // 12 ชม.
+
+      if (now - decoded.timestamp > twelveHours) {
+        // ❌ หมดอายุ
+        setExpiredModal(true); // ✅ modal แจ้งหมดอายุ
+      } else {
+        // ✅ ยังไม่หมดอายุ
         setItems(decoded.items || []);
         setOrderNumber(decoded.orderNumber || generateOrderNumber());
-        setActiveTab('card');
+        setActiveTab('card'); // แสดงใบเสร็จ
       }
     }
-  }, []);
+  }
+}, []);
 
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [modalType, setModalType] = useState('success');
 
   const generateShareableLink = () => {
-    const data = { items, orderNumber };
-    const encoded = encodeData(data);
-    const url = `${window.location.origin}${window.location.pathname}?data=${encoded}`;
-    navigator.clipboard.writeText(url);
-    setModalMessage('ລິ້ງໄດ້ຖືກຄັດລອກແລ້ວ!');
-    setModalType('success');
-    setShowModal(true);
+  const data = { 
+    items, 
+    orderNumber, 
+    timestamp: Date.now() // ✅ เพิ่ม timestamp ตอนสร้างลิ้ง
   };
+  const encoded = encodeData(data);
+  const url = `${window.location.origin}${window.location.pathname}?data=${encoded}`;
+  navigator.clipboard.writeText(url);
+  setModalMessage('ລິ້ງໄດ້ຖືກຄັດລອກແລ້ວ!');
+  setModalType('success');
+  setShowModal(true);
+};
 
   const shareImage = async () => {
     const element = document.querySelector('.print-area');
@@ -731,17 +745,24 @@ const App = () => {
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto w-full">
-          {activeTab === 'form' ? (
-            <div className="w-full">
-              <OrderForm 
-                items={items} 
-                setItems={setItems}
-                orderNumber={orderNumber}
-                generateNewOrderNumber={generateNewOrderNumber}
-              />
-            </div>
-          ) : (
+    <div className="w-full">
+  {expiredModal ? (
+    // Modal แสดงเมื่อหมดอายุ
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm text-center">
+        <h3 className="text-lg font-semibold mb-4 text-red-600">ລິ້ງໝົດອາຍຸແລ້ວ!</h3>
+        <p className="text-gray-600 mb-6">
+          ລິ້ງນີ້ຫມົດອາຍຸການນຳໃຊ້ ທ່ານຈະບໍ່ສາມາດເບິ່ງໄດ້
+        </p>
+        <button
+          onClick={() => setExpiredModal(false)}
+          className="px-6 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white"
+        >
+          ຕົກລົງ
+        </button>
+      </div>
+    </div>
+  ) : (
             <div className="w-full">
               <OrderCard items={items} orderNumber={orderNumber} />
               
