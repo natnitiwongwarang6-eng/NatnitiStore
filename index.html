@@ -599,6 +599,8 @@ const App = () => {
   const generateNewOrderNumber = () => {
     setOrderNumber(generateOrderNumber());
   };
+  
+const [isViewOnly, setIsViewOnly] = React.useState(false);
 const [expiredModal, setExpiredModal] = React.useState(false);
   // Load data from URL on mount
   React.useEffect(() => {
@@ -612,13 +614,14 @@ const [expiredModal, setExpiredModal] = React.useState(false);
       const twelveHours = 12 * 60 * 60 * 1000; // 12 ชม.
 
       if (now - decoded.timestamp > twelveHours) {
-        // ❌ หมดอายุ
-        setExpiredModal(true); // ✅ modal แจ้งหมดอายุ
+        // หมดอายุ
+        setExpiredModal(true);
       } else {
-        // ✅ ยังไม่หมดอายุ
+        // view-only mode
         setItems(decoded.items || []);
         setOrderNumber(decoded.orderNumber || generateOrderNumber());
-        setActiveTab('card'); // แสดงใบเสร็จ
+        setActiveTab('card');
+        setIsViewOnly(true);
       }
     }
   }
@@ -748,23 +751,61 @@ const [expiredModal, setExpiredModal] = React.useState(false);
     <div className="w-full">
   {expiredModal ? (
     // Modal แสดงเมื่อหมดอายุ
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm text-center">
-        <h3 className="text-lg font-semibold mb-4 text-red-600">ລິ້ງໝົດອາຍຸແລ້ວ!</h3>
-        <p className="text-gray-600 mb-6">
-          ລິ້ງນີ້ຫມົດອາຍຸການນຳໃຊ້ ທ່ານຈະບໍ່ສາມາດເບິ່ງໄດ້
-        </p>
-        <button
-          onClick={() => setExpiredModal(false)}
-          className="px-6 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white"
-        >
-          ຕົກລົງ
-        </button>
-      </div>
+    <div className="max-w-4xl mx-auto w-full">
+  {expiredModal ? (
+    <div className="text-center p-6 bg-white rounded-lg shadow-lg">
+      <p className="text-lg font-semibold text-red-600 mb-4">
+        ลิงก์หมดอายุแล้ว!
+      </p>
+      <button
+        onClick={() => setExpiredModal(false)}
+        className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
+      >
+        ตกลง
+      </button>
+    </div>
+  ) : isViewOnly ? (
+    <OrderCard items={items} orderNumber={orderNumber} />
+  ) : activeTab === 'form' ? (
+    <div className="w-full">
+      <OrderForm 
+        items={items} 
+        setItems={setItems}
+        orderNumber={orderNumber}
+        generateNewOrderNumber={generateNewOrderNumber}
+      />
     </div>
   ) : (
-            <div className="w-full">
-              <OrderCard items={items} orderNumber={orderNumber} />
+    <OrderCard items={items} orderNumber={orderNumber} />
+  )}
+</div><div className="max-w-4xl mx-auto w-full">
+  {expiredModal ? (
+    <div className="text-center p-6 bg-white rounded-lg shadow-lg">
+      <p className="text-lg font-semibold text-red-600 mb-4">
+        ลิงก์หมดอายุแล้ว!
+      </p>
+      <button
+        onClick={() => setExpiredModal(false)}
+        className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
+      >
+        ตกลง
+      </button>
+    </div>
+  ) : isViewOnly ? (
+    <OrderCard items={items} orderNumber={orderNumber} />
+  ) : activeTab === 'form' ? (
+    <div className="w-full">
+      <OrderForm 
+        items={items} 
+        setItems={setItems}
+        orderNumber={orderNumber}
+        generateNewOrderNumber={generateNewOrderNumber}
+      />
+    </div>
+  ) : (
+    <OrderCard items={items} orderNumber={orderNumber} />
+  )}
+</div>
               
               {/* Action Buttons */}
               <div className="flex flex-wrap justify-center gap-4 mt-8 no-print">
